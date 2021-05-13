@@ -4,13 +4,30 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
+    "deploy": "sst deploy",
     "build": "next build",
     "start": "next start"
   },
+  "dependencies": {
+    "@aws-amplify/auth": "^3.4.32",
+    "@aws-cdk/core": "1.98.0",
+    "@serverless-stack/cli": "^0.18.0",
+    "@serverless-stack/resources": "^0.18.0",
+    "axios": "^0.21.1"
+  },
   "devDependencies": {
+    "@aws-cdk/assert": "1.98.0",
+    "@aws-cdk/aws-cloudfront-origins": "1.98.0",
+    "@aws-cdk/aws-s3-deployment": "1.98.0",
+    "@kcm/shared": "^0.1.0",
+    "@sls-next/cdk-construct": "^1.19.0",
+    "@types/aws-lambda": "^8.10.76",
     "@types/react": "^17.0.5",
+    "autoprefixer": "^10.2.5",
     "next": "^10.2.0",
+    "postcss": "^8.2.15",
     "react": "^17.0.2",
-    "react-dom": "^17.0.2"
+    "react-dom": "^17.0.2",
+    "tailwindcss": "^2.1.2"
   }
 }

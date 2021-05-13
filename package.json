@@ -6,6 +6,7 @@
   "private": true,
   "scripts": {
     "build": "lerna run --parallel build",
+    "deploy": "lerna run --parallel deploy",
     "dev": "lerna run --parallel dev",
     "start": "lerna run --parallel start"
   },
@@ -16,9 +17,10 @@
     "@types/node": "^15.0.3",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
     "@typescript-eslint/parser": "^4.23.0",
-    "eslint": "^7.26.0",
+    "eslint": "^5.16.0",
+    "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-react": "^7.23.2",
+    "eslint-plugin-react": "^7.21.5",
     "eslint-plugin-react-hooks": "^4.2.0",
     "lerna": "^4.0.0",
     "prettier": "^2.3.0",

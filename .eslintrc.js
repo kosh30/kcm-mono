@@ -1,35 +1,18 @@
 module.exports = {
-  root: true,
   env: {
-    es6: true,
+    browser: true,
+    es2021: true,
     node: true,
   },
+  extends: ["plugin:react/recommended", "airbnb"],
   parser: "@typescript-eslint/parser",
-  plugins: ["@typescript-eslint", "react"],
   parserOptions: {
-    project: ["./tsconfig.json"],
     ecmaFeatures: {
       jsx: true,
     },
+    ecmaVersion: 12,
+    sourceType: "module",
   },
-  extends: [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:react/recommended",
-    "plugin:react-hooks/recommended",
-    "prettier",
-  ],
-  ignorePatterns: [
-    "dist",
-    "node_modules",
-    "examples",
-    "scripts",
-    ".eslintrc.js",
-  ],
-  rules: {
-    "react-hooks/rules-of-hooks": "error",
-    "react-hooks/exhaustive-deps": "error",
-    "react/react-in-jsx-scope": "off",
-  },
+  plugins: ["react", "@typescript-eslint"],
+  rules: {},
 };
