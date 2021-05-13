@@ -1,3 +1,6 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+/* eslint-disable no-console */
+
 import {
   BatchWriteItemCommand,
   DynamoDB,
@@ -103,7 +106,8 @@ export async function handle(
 
   const file = await s3Client.send(getObjectCommand);
 
-  const parser = (file.Body as any).pipe(
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call, @typescript-eslint/no-unsafe-member-access
+  const parser = file.Body.pipe(
     parse({
       columns: Array.from(columns),
       fromLine: 4,
@@ -121,6 +125,7 @@ export async function handle(
 
   const itemsPut: { [key: string]: boolean } = {};
 
+  // eslint-disable-next-line no-restricted-syntax
   for await (const record of parser) {
     if (!runDate) {
       runDate = new Date(Date.parse((record as RecordItem).runDate))
@@ -158,7 +163,7 @@ export async function handle(
         } catch (error) {
           console.log(
             "ERROR OCCURRED IN BATCHPUTITEMS",
-            error.message,
+            (error as Error).message,
             JSON.stringify(itemsToPut)
           );
           return {};
@@ -173,7 +178,7 @@ export async function handle(
     } catch (error) {
       console.log(
         "ERROR OCCURRED IN BATCHPUTITEMS",
-        error.message,
+        (error as Error).message,
         JSON.stringify(itemsToPut)
       );
       return {};
@@ -201,7 +206,7 @@ export async function handle(
 
     await dynamoDBClient.send(putItemCommand);
   } catch (error) {
-    console.log("ERROR OCCURRED IN PUTITEM BOOK", error.message);
+    console.log("ERROR OCCURRED IN PUTITEM BOOK", (error as Error).message);
     return {};
   }
 
@@ -218,8 +223,9 @@ export async function handle(
 export const handler = async (
   event: S3CreateEvent
 ): Promise<APIGatewayProxyResultV2> => {
-  const fileName = event.Records[0].s3.object.key;
-  const fileSize = Math.round(event.Records[0].s3.object.size / 10485.76) / 100;
+  const fileName = event.Records[0]!.s3.object.key;
+  const fileSize =
+    Math.round(event.Records[0]!.s3.object.size / 10485.76) / 100;
 
   return handle(fileName, fileSize);
 };

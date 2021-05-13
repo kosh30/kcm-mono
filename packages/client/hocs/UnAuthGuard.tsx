@@ -4,6 +4,8 @@ import React from "react";
 import { useAuth } from "../contexts/Auth";
 
 const UnAuthGaurd: React.FC = (props) => {
+  const { children } = props;
+
   const [{ status, user }] = useAuth();
   const router = useRouter();
 
@@ -13,6 +15,7 @@ const UnAuthGaurd: React.FC = (props) => {
     }
 
     if (user) {
+      // eslint-disable-next-line @typescript-eslint/no-floating-promises
       goHome();
     }
   }, [status, router, user]);
@@ -21,7 +24,7 @@ const UnAuthGaurd: React.FC = (props) => {
     return <></>;
   }
 
-  return <>{props.children}</>;
+  return <>{children}</>;
 };
 
 export default UnAuthGaurd;

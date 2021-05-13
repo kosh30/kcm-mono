@@ -3,11 +3,18 @@ import Link from "next/link";
 
 import AuthGuard from "../../hocs/AuthGuard";
 
+interface NavbarLink {
+  active?: boolean;
+  path: string;
+  text: string;
+}
 export interface NavbarProps {
-  links: { active?: boolean; path: string; text: string }[];
+  links: NavbarLink[];
 }
 
 const Navbar: React.FC<NavbarProps> = (props) => {
+  const { links } = props;
+
   return (
     <AuthGuard>
       <header>
@@ -18,12 +25,13 @@ const Navbar: React.FC<NavbarProps> = (props) => {
 
               <p className="text-xl text-gray-700 ">
                 <Link href="/">
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <a>KCM</a>
                 </Link>
               </p>
             </div>
 
-            {props.links.map((link) => (
+            {links.map((link) => (
               <div
                 className={classNames(
                   "flex items-center justify-center h-full text-gray-500 hover:text-gray-900 text-sm",
@@ -35,6 +43,7 @@ const Navbar: React.FC<NavbarProps> = (props) => {
                 key={link.text}
               >
                 <Link href={link.path}>
+                  {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
                   <a>{link.text}</a>
                 </Link>
               </div>
@@ -42,8 +51,8 @@ const Navbar: React.FC<NavbarProps> = (props) => {
           </div>
 
           <div className="flex items-center space-x-4">
-            <button className="w-8 h-8 ">
-              <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
+            <button className="w-8 h-8" type="button">
+              <div className="w-8 h-8 bg-gray-200 rounded-full" />
               {/* <Image
             className="rounded-full"
             width={32}

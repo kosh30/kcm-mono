@@ -59,7 +59,8 @@ type Actions = {
 type AuthContextType = [state: State, actions: Actions] | null;
 const AuthContext = React.createContext<AuthContextType>(null);
 
-export const useAuth = () => React.useContext(AuthContext);
+// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+export const useAuth = (): [State, Actions] => React.useContext(AuthContext)!;
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [state, dispatch] = React.useReducer(reducer, initalState);
@@ -69,10 +70,13 @@ export const AuthProvider: React.FC = ({ children }) => {
       dispatch({ type: "SIGNIN_LOADING" });
 
       try {
-        const cognitoUser: CognitoUser = await Auth.signIn(username, password);
+        const cognitoUser = (await Auth.signIn(
+          username,
+          password
+        )) as CognitoUser;
         dispatch({ type: "SIGNIN_SUCCESS", payload: cognitoUser });
       } catch (error) {
-        dispatch({ type: "SIGNIN_FAILURE", payload: error.message });
+        dispatch({ type: "SIGNIN_FAILURE", payload: (error as Error).message });
       }
     },
     []
@@ -85,17 +89,19 @@ export const AuthProvider: React.FC = ({ children }) => {
       await Auth.signOut();
       dispatch({ type: "SIGNOUT_SUCCESS" });
     } catch (error) {
-      dispatch({ type: "SIGNOUT_FAILURE", payload: error.message });
+      dispatch({ type: "SIGNOUT_FAILURE", payload: (error as Error).message });
     }
   }, []);
 
   React.useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/no-floating-promises
     (async () => {
       try {
-        const cognitoUser: CognitoUser = await Auth.currentAuthenticatedUser();
+        const cognitoUser =
+          (await Auth.currentAuthenticatedUser()) as CognitoUser;
         dispatch({ type: "SIGNIN_SUCCESS", payload: cognitoUser });
       } catch (error) {
-        dispatch({ type: "SIGNIN_FAILURE", payload: error.message });
+        dispatch({ type: "SIGNIN_FAILURE", payload: (error as Error).message });
       }
     })();
   }, []);

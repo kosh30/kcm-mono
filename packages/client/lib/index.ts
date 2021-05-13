@@ -15,6 +15,7 @@ export default function main(app: sst.App): void {
       new Stack(app, "stack");
     })
     .catch((e) => {
+      // eslint-disable-next-line no-console
       console.log(e);
       process.exit(1);
     });

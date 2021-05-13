@@ -3,10 +3,10 @@ import { useRouter } from "next/router";
 import Navbar, { NavbarProps } from "./Navbar";
 
 const navbarProps: NavbarProps = {
-  links: [{ path: "/chart", text: "Chart" }],
+  links: [{ path: "/chart", text: "Chart", active: false }],
 };
 
-export default function Header() {
+const Header: React.FC = () => {
   const { pathname } = useRouter();
 
   // Set which (if any) is active
@@ -17,7 +17,9 @@ export default function Header() {
 
   return (
     <header className="px-6 bg-white">
-      <Navbar {...navbarProps} />
+      <Navbar links={navbarProps.links} />
     </header>
   );
-}
+};
+
+export default Header;
