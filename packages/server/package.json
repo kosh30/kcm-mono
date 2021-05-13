@@ -1,0 +1,22 @@
+{
+  "name": "@kcm/server",
+  "version": "0.1.0",
+  "license": "MIT",
+  "scripts": {
+    "dev": "sst start",
+    "test": "sst test",
+    "start": "sst start",
+    "build": "sst build",
+    "deploy": "sst deploy",
+    "remove": "sst remove"
+  },
+  "devDependencies": {
+    "@aws-cdk/assert": "1.98.0",
+    "@types/aws-lambda": "^8.10.76"
+  },
+  "dependencies": {
+    "@aws-cdk/core": "1.98.0",
+    "@serverless-stack/cli": "^0.18.0",
+    "@serverless-stack/resources": "^0.18.0"
+  }
+}
