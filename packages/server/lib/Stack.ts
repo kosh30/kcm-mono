@@ -123,6 +123,7 @@ export default class Stack extends sst.Stack {
         },
       },
       routes: {
+        "GET /book": "src/book.handler",
         "GET /presigned": "src/presigned.handler",
       },
     });

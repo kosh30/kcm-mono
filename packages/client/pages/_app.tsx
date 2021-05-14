@@ -1,9 +1,11 @@
 import Auth from "@aws-amplify/auth";
 import axios from "axios";
-import type { AppProps } from "next/app";
+import { AppProps } from "next/app";
+import { SWRConfig } from "swr";
 
 import { getClientId, getUserPoolId } from "../amplify";
 import { AuthProvider } from "../contexts/Auth";
+import { BookProvider } from "../contexts/Book";
 
 import "../styles/globals.css";
 import "tailwindcss/tailwind.css";
@@ -29,10 +31,23 @@ axios.interceptors.request.use(async (config) => {
   return config;
 });
 
+function fetcher<T>(url: string): Promise<T> {
+  return axios.get(url).then((res) => res.data as T);
+}
+
 const MyApp: React.FC<AppProps> = ({ Component, pageProps }: AppProps) => (
-  <AuthProvider>
-    <Component {...pageProps} />
-  </AuthProvider>
+  <SWRConfig
+    value={{
+      revalidateOnFocus: false,
+      fetcher,
+    }}
+  >
+    <AuthProvider>
+      <BookProvider>
+        <Component {...pageProps} />
+      </BookProvider>
+    </AuthProvider>
+  </SWRConfig>
 );
 
 export default MyApp;
