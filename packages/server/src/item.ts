@@ -12,14 +12,14 @@ const dynamoDBClient = new DynamoDBClient({ region: "us-east-1" });
 
 // eslint-disable-next-line import/prefer-default-export
 export const handler: APIGatewayProxyHandlerV2 = async (event) => {
-  const { classDesc, itemCode, upc } = event.queryStringParameters ?? {};
+  const { itemCode, upc } = event.queryStringParameters ?? {};
 
-  if (!classDesc && !itemCode && !upc) {
+  if (!itemCode && !upc) {
     return {
       statusCode: 400,
       body: JSON.stringify({
         error: "Bad Request",
-        message: "One of classDesc, itemCode, or upc is required.",
+        message: "One of itemCode or upc is required.",
         path: event.rawPath,
         status: "400",
         timestamp: Date.now().toString(),

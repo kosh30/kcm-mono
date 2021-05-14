@@ -8,7 +8,6 @@ type IdentifierChoice =
     }
   | { itemCode?: never; upc: string };
 
-// eslint-disable-next-line import/prefer-default-export
 export const getItem = async ({
   itemCode,
   upc,
@@ -17,4 +16,9 @@ export const getItem = async ({
     `/item?${itemCode ? `itemCode=${itemCode}` : `upc=${upc}`}`
   );
   return response.data as Item;
+};
+
+export const getItems = async (classDesc: string): Promise<Item[]> => {
+  const response = await axios.get(`/items?classDesc=${classDesc}`);
+  return response.data as Item[];
 };

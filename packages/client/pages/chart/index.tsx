@@ -27,7 +27,10 @@ const Chart: React.FC = () => {
 
   const handleAddItemSubmit: React.FormEventHandler = async (event) => {
     event.preventDefault();
-    await addItem(identifier, [currentShelf, 0]);
+    await addItem(identifier, [
+      currentShelf,
+      setState.set.items[currentShelf].length,
+    ]);
     setIdentifier("");
     identifierInputRef.current?.focus();
   };

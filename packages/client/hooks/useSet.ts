@@ -1,6 +1,6 @@
 import { Item, Set, newSet } from "@kcm/shared/src/types";
 import React from "react";
-import { getItem } from "../api/item";
+import { getItem, getItems } from "../api/item";
 
 type State = {
   error: string;
@@ -124,9 +124,17 @@ function useSet(set?: Set): [State, Actions] {
         return;
       }
 
-      cache.current[item.itemCode] = item;
-      cache.current[item.upc] = item;
       dispatch({ type: "ADD_ITEM_SUCCESS", payload: { item, location } });
+
+      try {
+        const items = await getItems(item.classDesc);
+
+        items.forEach((i) => {
+          cache.current[i.itemCode] = i;
+          cache.current[i.upc] = i;
+        });
+        // eslint-disable-next-line no-empty
+      } catch (e) {}
     },
     []
   );
