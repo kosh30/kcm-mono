@@ -19,7 +19,7 @@ const Chart: React.FC = () => {
   const [uploadLoading, setUploadLoading] = React.useState<boolean>(false);
 
   const [{ book }] = useBook();
-  const [setState, { addItem, addShelf }] = useSet();
+  const [setState, { addItem, addShelf, downloadAsCsv }] = useSet();
 
   const handleAddFileClick = () => {
     inputRef.current?.click();
@@ -170,6 +170,34 @@ const Chart: React.FC = () => {
                       />
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border rounded-md shadow-sm">
+              <div className="space-y-4">
+                <h2 className="font-medium">Actions</h2>
+
+                <div className="flex items-center space-x-4">
+                  <button
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
+                    type="button"
+                    onClick={() => {
+                      downloadAsCsv("itemCode");
+                    }}
+                  >
+                    Download as CSV (SVIC)
+                  </button>
+
+                  <button
+                    className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
+                    type="button"
+                    onClick={() => {
+                      downloadAsCsv("upc");
+                    }}
+                  >
+                    Download as CSV (UPC)
+                  </button>
                 </div>
               </div>
             </div>

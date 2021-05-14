@@ -1,6 +1,7 @@
 import { Item, Set, newSet } from "@kcm/shared/src/types";
 import React from "react";
 import { getItem, getItems } from "../api/item";
+import { downloadSetAsCsv } from "../helpers/csv";
 
 type State = {
   error: string;
@@ -74,6 +75,7 @@ const reducer = (state: State, action: Action): State => {
 type Actions = {
   addItem: (identifier: string, location: [number, number]) => Promise<void>;
   addShelf: (shelf: number) => void;
+  downloadAsCsv: (key: keyof Item) => void;
 };
 
 function transformUpc(upc: string): string {
@@ -150,7 +152,18 @@ function useSet(set?: Set): [State, Actions] {
     dispatch({ type: "ADD_SHELF", payload: shelf });
   }, []);
 
-  const actions: Actions = { addItem, addShelf };
+  const downloadAsCsv = React.useCallback(
+    (key: keyof Item) => {
+      downloadSetAsCsv(
+        `${state.set.store}-${state.set.name}-${Date.now()}.csv`,
+        state.set.items,
+        key
+      );
+    },
+    [state.set.items, state.set.name, state.set.store]
+  );
+
+  const actions: Actions = { addItem, addShelf, downloadAsCsv };
 
   return [state, actions];
 }
