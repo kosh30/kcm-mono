@@ -47,6 +47,9 @@ export default class Stack extends sst.Stack {
       },
     });
 
+    // Give the notification functions permissions to access the bucket and table
+    parseFunction.attachPermissions([bucket, table]);
+
     // Add parse as handler for object created notification
     bucket.addNotification(this, {
       function: parseFunction,
@@ -64,9 +67,6 @@ export default class Stack extends sst.Stack {
         filters: [{ suffix: ".CSV" }],
       },
     });
-
-    // Give the notification functions permissions to access the bucket and table
-    bucket.attachPermissions([bucket, table]);
 
     // Create the User Pool
     const userPool = new cognito.UserPool(this, "UserPool", {
