@@ -1,22 +1,35 @@
+import classNames from "classnames";
 import React from "react";
-import upload from "../../api/upload";
 
+import upload from "../../api/upload";
 import Header from "../../components/Header";
 import { useBook } from "../../contexts/Book";
 import AuthGuard from "../../hocs/AuthGuard";
+import useSet from "../../hooks/useSet";
 
 const Chart: React.FC = () => {
+  const identifierInputRef = React.useRef<HTMLInputElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
-  const [file, setFile] = React.useState<File>();
   const [bookCard, setBookCard] =
     React.useState<"current" | "upload">("upload");
+  const [file, setFile] = React.useState<File>();
+  const [identifier, setIdentifier] = React.useState<string>("");
+  const [currentShelf, setCurrentShelf] = React.useState<number>(0);
   const [uploadError, setUploadError] = React.useState<string>("");
   const [uploadLoading, setUploadLoading] = React.useState<boolean>(false);
 
   const [{ book }] = useBook();
+  const [setState, { addItem, addShelf }] = useSet();
 
   const handleAddFileClick = () => {
     inputRef.current?.click();
+  };
+
+  const handleAddItemSubmit: React.FormEventHandler = async (event) => {
+    event.preventDefault();
+    await addItem(identifier, [currentShelf, 0]);
+    setIdentifier("");
+    identifierInputRef.current?.focus();
   };
 
   const handleFileChange: React.ChangeEventHandler<HTMLInputElement> = (
@@ -24,6 +37,11 @@ const Chart: React.FC = () => {
   ) => {
     setFile(event.target.files.item(0));
     setUploadError("");
+  };
+
+  const handleAddShelfClick = () => {
+    addShelf(currentShelf);
+    setCurrentShelf((s) => s + 1);
   };
 
   const handleSwapBookCardClick = () => {
@@ -47,18 +65,116 @@ const Chart: React.FC = () => {
     }
   };
 
+  console.log(setState.set.items);
   return (
     <AuthGuard>
       <div className="flex flex-col min-h-screen">
         <Header />
 
         <main className="grid flex-1 grid-cols-12 gap-8 px-6 py-4">
-          <div className="h-full col-span-9 space-y-4">
-            <div className="h-full border rounded-md shadow-sm" />
+          <div className="col-span-9 space-y-4">
+            <div className="px-6 py-4 border rounded-md shadow-sm">
+              <div className="space-y-4">
+                <h2 className="font-medium">Add Items</h2>
+
+                <form
+                  className="flex items-center space-x-4"
+                  onSubmit={handleAddItemSubmit}
+                >
+                  <div>
+                    <label
+                      className="block text-sm font-medium text-gray-500"
+                      htmlFor="identifier"
+                    >
+                      Identifier
+                      <input
+                        className="block text-gray-900 border-0 border-b outline-none w-28 ring-0 focus:ring-0 focus:outline-none"
+                        id="identifier"
+                        maxLength={12}
+                        name="identifier"
+                        ref={identifierInputRef}
+                        required
+                        value={identifier}
+                        onChange={(event) => setIdentifier(event.target.value)}
+                      />
+                    </label>
+                    <span className="text-xs text-gray-500">SVIC or UPC</span>
+                  </div>
+
+                  <div className="">
+                    <button
+                      className="text-sm text-karns-blue"
+                      disabled={setState.status === "loading"}
+                      type="submit"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div>
+                    <button
+                      className="text-sm text-karns-blue"
+                      type="button"
+                      onClick={handleAddShelfClick}
+                    >
+                      Add Shelf
+                    </button>
+                  </div>
+                </form>
+
+                <div className="space-y-4 overflow-scroll">
+                  {setState.set.items.map((shelf, shelfIndex) => (
+                    <div
+                      // eslint-disable-next-line react/no-array-index-key
+                      key={shelfIndex}
+                      className="space-y-4"
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter") {
+                          setCurrentShelf(shelfIndex);
+                        }
+                      }}
+                      onClick={() => {
+                        setCurrentShelf(shelfIndex);
+                      }}
+                    >
+                      <div className="flex items-center space-x-4">
+                        {shelf.map((item, itemIndex) => (
+                          <div
+                            className="flex-shrink-0 w-48 p-4 text-sm border rounded-md"
+                            // eslint-disable-next-line react/no-array-index-key
+                            key={itemIndex}
+                          >
+                            <p>{item.brand}</p>
+                            <p>{item.description}</p>
+                            <p>{item.itemCode}</p>
+                            <p>
+                              {item.upc}
+                              {item.restrictPfInd}
+                            </p>
+                            <p>{item.size}</p>
+                            <p>{item.pack}</p>
+                            <p>{item.classDesc}</p>
+                            <p>{item.subClassDescription}</p>
+                          </div>
+                        ))}
+                      </div>
+
+                      <div
+                        className={classNames("w-full h-px bg-gray-300", {
+                          "bg-karns-blue": shelfIndex === currentShelf,
+                        })}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           </div>
 
           <div className="col-span-3 space-y-4">
-            <div className="px-6 py-4 border rounded-md shadow-sm ">
+            <div className="px-6 py-4 border rounded-md shadow-sm">
               {bookCard === "upload" && (
                 <form className="space-y-4" onSubmit={handleUploadFormSubmit}>
                   <div className="flex items-center justify-between">

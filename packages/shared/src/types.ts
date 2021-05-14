@@ -71,3 +71,29 @@ export type Item = {
   varietyId: string;
   varietyDesc: string;
 };
+
+export type Set = {
+  aisle: string;
+  createdAt: string;
+  createdBy: string;
+  items: Item[][];
+  length: string;
+  name: string;
+  notes: string;
+  store: string;
+  updatedAt: string;
+  version: string;
+};
+
+export const newSet = (): Set => ({
+  aisle: "",
+  createdAt: "",
+  createdBy: "",
+  length: "",
+  items: [[]],
+  name: "",
+  notes: "",
+  store: "",
+  updatedAt: "",
+  version: "",
+});

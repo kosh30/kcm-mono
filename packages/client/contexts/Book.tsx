@@ -19,7 +19,6 @@ export const useBook = (): [State] => React.useContext(BookContext)!;
 export const BookProvider: React.FC = ({ children }) => {
   const [authState] = useAuth();
   const { data, error } = useSwr<Book, Error>(() => authState.user && "/book");
-  console.log(data);
 
   return (
     <BookContext.Provider

@@ -10,9 +10,14 @@
     "dev": "lerna run --parallel dev",
     "start": "lerna run --parallel start"
   },
-  "workspaces": [
-    "packages/*"
-  ],
+  "workspaces": {
+    "packages": [
+      "packages/*"
+    ],
+    "nohoist": [
+      "**/babel-loader"
+    ]
+  },
   "devDependencies": {
     "@types/node": "^15.0.3",
     "@typescript-eslint/eslint-plugin": "^4.23.0",
