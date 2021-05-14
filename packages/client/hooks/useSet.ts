@@ -69,7 +69,13 @@ type Actions = {
   addShelf: (shelf: number) => void;
 };
 
+function transformUpc(upc: string): string {
+  return `00${upc[0]}-${upc.slice(1, 6)}-${upc.slice(6, 11)}`;
+}
+
 function useSet(set?: Set): [State, Actions] {
+  const cache = React.useRef<{ [key: string]: Item }>({});
+
   const [state, dispatch] = React.useReducer(reducer, {
     ...initialState,
     set: { ...initialState.set, ...set },
@@ -81,28 +87,46 @@ function useSet(set?: Set): [State, Actions] {
         return;
       }
 
+      if (cache.current[identifier.slice(0, 7)]) {
+        dispatch({
+          type: "ADD_ITEM_SUCCESS",
+          payload: { item: cache.current[identifier.slice(0, 7)], location },
+        });
+        return;
+      }
+
+      if (cache.current[transformUpc(identifier)]) {
+        dispatch({
+          type: "ADD_ITEM_SUCCESS",
+          payload: { item: cache.current[transformUpc(identifier)], location },
+        });
+        return;
+      }
+
       dispatch({ type: "ADD_ITEM_LOADING" });
+
+      let item: Item;
 
       try {
         try {
-          const item = await getItem({ itemCode: identifier.slice(0, 7) });
-          dispatch({ type: "ADD_ITEM_SUCCESS", payload: { item, location } });
+          item = await getItem({ itemCode: identifier.slice(0, 7) });
         } catch (e) {
           if (identifier.length < 12) {
             throw e;
           }
 
-          const item = await getItem({
-            upc: `00${identifier[0]}-${identifier.slice(
-              1,
-              6
-            )}-${identifier.slice(6, 11)}`,
+          item = await getItem({
+            upc: transformUpc(identifier),
           });
-          dispatch({ type: "ADD_ITEM_SUCCESS", payload: { item, location } });
         }
       } catch (e) {
         dispatch({ type: "ADD_ITEM_FAILURE", payload: e as Error });
+        return;
       }
+
+      cache.current[item.itemCode] = item;
+      cache.current[item.upc] = item;
+      dispatch({ type: "ADD_ITEM_SUCCESS", payload: { item, location } });
     },
     []
   );
