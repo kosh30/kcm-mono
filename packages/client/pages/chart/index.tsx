@@ -68,7 +68,6 @@ const Chart: React.FC = () => {
     }
   };
 
-  console.log(setState.set.items);
   return (
     <AuthGuard>
       <div className="flex flex-col min-h-screen">
@@ -125,12 +124,12 @@ const Chart: React.FC = () => {
                   </div>
                 </form>
 
-                <div className="space-y-4 overflow-scroll">
+                <div className="space-y-4">
                   {setState.set.items.map((shelf, shelfIndex) => (
                     <div
                       // eslint-disable-next-line react/no-array-index-key
                       key={shelfIndex}
-                      className="space-y-4"
+                      className="space-y-4 overflow-scroll"
                       role="button"
                       tabIndex={0}
                       onKeyDown={(event) => {
@@ -253,7 +252,7 @@ const Chart: React.FC = () => {
               )}
 
               {bookCard === "current" && (
-                <div className="space-y-4" onSubmit={handleUploadFormSubmit}>
+                <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <h2 className="font-medium">Current Master Price Book</h2>
                     <button
@@ -270,41 +269,97 @@ const Chart: React.FC = () => {
                       <h3 className="text-sm font-medium text-gray-500">
                         File name
                       </h3>
-                      <span className="text-sm">{book && book.fileName}</span>
+                      <span className="text-sm">{book?.fileName}</span>
                     </div>
 
                     <div className="col-span-1">
                       <h3 className="text-sm font-medium text-gray-500">
                         Run date
                       </h3>
-                      <span className="text-sm">{book && book.runDate}</span>
+                      <span className="text-sm">{book?.runDate}</span>
                     </div>
 
                     <div className="col-span-1">
                       <h3 className="text-sm font-medium text-gray-500">
                         File size
                       </h3>
-                      <span className="text-sm">{book && book.fileSize}</span>
+                      <span className="text-sm">{book?.fileSize}</span>
                     </div>
 
                     <div className="col-span-1">
                       <h3 className="text-sm font-medium text-gray-500">
                         Item count
                       </h3>
-                      <span className="text-sm">{book && book.itemCount}</span>
+                      <span className="text-sm">{book?.itemCount}</span>
                     </div>
 
                     <div className="col-span-1">
                       <h3 className="text-sm font-medium text-gray-500">
                         Class descs
                       </h3>
-                      <span className="text-sm">
-                        {book && book.classDescs.length}
-                      </span>
+                      <span className="text-sm">{book?.classDescs.length}</span>
                     </div>
                   </div>
                 </div>
               )}
+            </div>
+
+            <div className="px-6 py-4 border rounded-md shadow-sm">
+              <div className="space-y-4">
+                <h2 className="font-medium">Last added item</h2>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">SVIC</h3>
+                    <span className="text-sm">
+                      {setState.lastItem?.itemCode}
+                    </span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">Upc</h3>
+                    <span className="text-sm">
+                      {setState.lastItem?.upc}
+                      {setState.lastItem?.restrictPfInd}
+                    </span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">Brand</h3>
+                    <span className="text-sm">{setState.lastItem?.brand}</span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">
+                      Description
+                    </h3>
+                    <span className="text-sm">
+                      {setState.lastItem?.description}
+                    </span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">Size</h3>
+                    <span className="text-sm">{setState.lastItem?.size}</span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">Pack</h3>
+                    <span className="text-sm">{setState.lastItem?.pack}</span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">
+                      Class Desc
+                    </h3>
+                    <span className="text-sm">
+                      {setState.lastItem?.classDesc}
+                    </span>
+                  </div>
+                  <div className="col-span-1">
+                    <h3 className="text-sm font-medium text-gray-500">
+                      Subclass Description
+                    </h3>
+                    <span className="text-sm">
+                      {setState.lastItem?.subClassDescription}
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </main>

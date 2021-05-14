@@ -4,6 +4,7 @@ import { getItem, getItems } from "../api/item";
 
 type State = {
   error: string;
+  lastItem: Item | null;
   status: "pending" | "loading" | "failure" | "success";
   set: Set;
 };
@@ -17,7 +18,12 @@ type Action =
     }
   | { type: "ADD_SHELF"; payload: number };
 
-const initialState: State = { error: "", status: "pending", set: newSet() };
+const initialState: State = {
+  error: "",
+  lastItem: null,
+  status: "pending",
+  set: newSet(),
+};
 
 const reducer = (state: State, action: Action): State => {
   switch (action.type) {
@@ -28,6 +34,7 @@ const reducer = (state: State, action: Action): State => {
     case "ADD_ITEM_SUCCESS":
       return {
         ...state,
+        lastItem: action.payload.item,
         status: "success",
         set: {
           ...state.set,
