@@ -11,7 +11,7 @@ const Chart: React.FC = () => {
   const identifierInputRef = React.useRef<HTMLInputElement>(null);
   const inputRef = React.useRef<HTMLInputElement>(null);
   const [bookCard, setBookCard] =
-    React.useState<"current" | "upload">("upload");
+    React.useState<"current" | "upload">("current");
   const [file, setFile] = React.useState<File>();
   const [identifier, setIdentifier] = React.useState<string>("");
   const [currentShelf, setCurrentShelf] = React.useState<number>(0);
@@ -19,7 +19,10 @@ const Chart: React.FC = () => {
   const [uploadLoading, setUploadLoading] = React.useState<boolean>(false);
 
   const [{ book }] = useBook();
-  const [setState, { addItem, addShelf, downloadAsCsv, removeItem }] = useSet();
+  const [
+    setState,
+    { addItem, addShelf, downloadAsCsv, downloadMissingItems, removeItem },
+  ] = useSet();
 
   const handleAddFileClick = () => {
     inputRef.current?.click();
@@ -217,6 +220,108 @@ const Chart: React.FC = () => {
                       />
                     </div>
                   ))}
+                </div>
+              </div>
+            </div>
+
+            <div className="px-6 py-4 border rounded-md shadow-sm">
+              <div className="space-y-4">
+                <h2 className="font-medium">Missing Items</h2>
+
+                <div className="flex justify-between px-3 py-2 border rounded-md">
+                  <span className="text-sm text-gray-500">
+                    All missing items
+                  </span>
+
+                  <div>
+                    <button
+                      className="text-sm text-gray-500 hover:text-karns-blue"
+                      type="button"
+                      onClick={() => {
+                        downloadMissingItems();
+                      }}
+                    >
+                      Download
+                    </button>
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-sm ">Missing items by class desc</h3>
+
+                  <div className="border rounded-md">
+                    {[
+                      ...new Set(
+                        setState.set.items.flat().map((i) => i.classDesc)
+                      ),
+                    ].map((classDesc: string, index) => (
+                      <div
+                        className={classNames(
+                          "flex justify-between px-3 py-2",
+                          {
+                            "border-b": index > 0,
+                          }
+                        )}
+                        key={classDesc}
+                      >
+                        <span className="text-sm text-gray-500">
+                          {classDesc.toLowerCase()}
+                        </span>
+                        <div>
+                          <button
+                            className="text-sm text-gray-500 hover:text-karns-blue"
+                            type="button"
+                            onClick={() => {
+                              downloadMissingItems({ classDesc });
+                            }}
+                          >
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-1">
+                  <h3 className="text-sm ">
+                    Missing items by subclass description
+                  </h3>
+
+                  <div className="border rounded-md">
+                    {[
+                      ...new Set(
+                        setState.set.items
+                          .flat()
+                          .map((i) => i.subClassDescription)
+                      ),
+                    ].map((subClassDescription: string, index) => (
+                      <div
+                        className={classNames(
+                          "flex justify-between px-3 py-2",
+                          {
+                            "border-b": index > 0,
+                          }
+                        )}
+                        key={subClassDescription}
+                      >
+                        <span className="text-sm text-gray-500">
+                          {subClassDescription.toLowerCase()}
+                        </span>
+                        <div>
+                          <button
+                            className="text-sm text-gray-500 hover:text-karns-blue"
+                            type="button"
+                            onClick={() => {
+                              downloadMissingItems({ subClassDescription });
+                            }}
+                          >
+                            Download
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
             </div>

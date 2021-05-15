@@ -1,7 +1,7 @@
 import { Item, Set, newSet } from "@kcm/shared/src/types";
 import React from "react";
 import { getItem, getItems } from "../api/item";
-import { downloadSetAsCsv } from "../helpers/csv";
+import { downloadItemsAsCsv, downloadSetAsCsv } from "../helpers/csv";
 
 type State = {
   error: string;
@@ -90,10 +90,16 @@ const reducer = (state: State, action: Action): State => {
   }
 };
 
+type DownloadMissingItemsProps =
+  | never
+  | { classDesc: string; subClassDescription?: never }
+  | { classDesc?: never; subClassDescription: string };
+
 type Actions = {
   addItem: (identifier: string, location: [number, number]) => Promise<void>;
   addShelf: (shelf: number) => void;
   downloadAsCsv: (key: keyof Item) => void;
+  downloadMissingItems: (props?: DownloadMissingItemsProps) => void;
   removeItem: (location: [number, number]) => void;
 };
 
@@ -182,11 +188,53 @@ function useSet(set?: Set): [State, Actions] {
     [state.set.items, state.set.name, state.set.store]
   );
 
+  const downloadMissingItems = React.useCallback(
+    (props?: DownloadMissingItemsProps) => {
+      let items = Object.keys(cache.current).reduce<Item[]>((prev, curr) => {
+        if (prev.some((i) => i.itemCode === cache.current[curr].itemCode)) {
+          return [...prev];
+        }
+
+        if (
+          state.set.items
+            .flat()
+            .some((i) => i.itemCode === cache.current[curr].itemCode)
+        ) {
+          return [...prev];
+        }
+
+        return [...prev, cache.current[curr]];
+      }, []);
+      let fileName = `${state.set.store}-${state.set.name}-${Date.now()}`;
+
+      if (props?.classDesc) {
+        items = items.filter((i) => i.classDesc === props.classDesc);
+        fileName = `${fileName}-${props.classDesc}.csv`;
+      }
+
+      if (props?.subClassDescription) {
+        items = items.filter(
+          (i) => i.subClassDescription === props.subClassDescription
+        );
+        fileName = `${fileName}-${items[0].classDesc}-${props.subClassDescription}.csv`;
+      }
+
+      downloadItemsAsCsv(fileName, items);
+    },
+    [state.set.store, state.set.name, state.set.items]
+  );
+
   const removeItem = React.useCallback((location: [number, number]) => {
     dispatch({ type: "REMOVE_ITEM", payload: location });
   }, []);
 
-  const actions: Actions = { addItem, addShelf, downloadAsCsv, removeItem };
+  const actions: Actions = {
+    addItem,
+    addShelf,
+    downloadMissingItems,
+    downloadAsCsv,
+    removeItem,
+  };
 
   return [state, actions];
 }
