@@ -17,7 +17,8 @@ type Action =
       type: "ADD_ITEM_SUCCESS";
       payload: { item: Item; location: [number, number] };
     }
-  | { type: "ADD_SHELF"; payload: number };
+  | { type: "ADD_SHELF"; payload: number }
+  | { type: "REMOVE_ITEM"; payload: [number, number] };
 
 const initialState: State = {
   error: "",
@@ -67,6 +68,23 @@ const reducer = (state: State, action: Action): State => {
           ],
         },
       };
+    case "REMOVE_ITEM":
+      return {
+        ...state,
+        set: {
+          ...state.set,
+          items: [
+            ...state.set.items.slice(0, action.payload[0]),
+            [
+              ...state.set.items[action.payload[0]].slice(0, action.payload[1]),
+              ...state.set.items[action.payload[0]].slice(
+                action.payload[1] + 1
+              ),
+            ],
+            ...state.set.items.slice(action.payload[0] + 1),
+          ],
+        },
+      };
     default:
       return { ...state };
   }
@@ -76,6 +94,7 @@ type Actions = {
   addItem: (identifier: string, location: [number, number]) => Promise<void>;
   addShelf: (shelf: number) => void;
   downloadAsCsv: (key: keyof Item) => void;
+  removeItem: (location: [number, number]) => void;
 };
 
 function transformUpc(upc: string): string {
@@ -163,7 +182,11 @@ function useSet(set?: Set): [State, Actions] {
     [state.set.items, state.set.name, state.set.store]
   );
 
-  const actions: Actions = { addItem, addShelf, downloadAsCsv };
+  const removeItem = React.useCallback((location: [number, number]) => {
+    dispatch({ type: "REMOVE_ITEM", payload: location });
+  }, []);
+
+  const actions: Actions = { addItem, addShelf, downloadAsCsv, removeItem };
 
   return [state, actions];
 }

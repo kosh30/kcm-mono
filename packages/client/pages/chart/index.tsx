@@ -19,7 +19,7 @@ const Chart: React.FC = () => {
   const [uploadLoading, setUploadLoading] = React.useState<boolean>(false);
 
   const [{ book }] = useBook();
-  const [setState, { addItem, addShelf, downloadAsCsv }] = useSet();
+  const [setState, { addItem, addShelf, downloadAsCsv, removeItem }] = useSet();
 
   const handleAddFileClick = () => {
     inputRef.current?.click();
@@ -45,6 +45,7 @@ const Chart: React.FC = () => {
   const handleAddShelfClick = () => {
     addShelf(currentShelf);
     setCurrentShelf((s) => s + 1);
+    identifierInputRef.current?.focus();
   };
 
   const handleSwapBookCardClick = () => {
@@ -144,21 +145,67 @@ const Chart: React.FC = () => {
                       <div className="flex items-center space-x-4">
                         {shelf.map((item, itemIndex) => (
                           <div
-                            className="flex-shrink-0 w-48 p-4 text-sm border rounded-md"
+                            className="flex items-end justify-between flex-shrink-0 p-4 space-x-2 text-sm border rounded-md"
                             // eslint-disable-next-line react/no-array-index-key
                             key={itemIndex}
                           >
-                            <p>{item.brand}</p>
-                            <p>{item.description}</p>
-                            <p>{item.itemCode}</p>
-                            <p>
-                              {item.upc}
-                              {item.restrictPfInd}
-                            </p>
-                            <p>{item.size}</p>
-                            <p>{item.pack}</p>
-                            <p>{item.classDesc}</p>
-                            <p>{item.subClassDescription}</p>
+                            <div>
+                              <p>{item.brand}</p>
+                              <p>{item.description}</p>
+                              <p>{item.itemCode}</p>
+                              <p>
+                                {item.upc}
+                                {item.restrictPfInd}
+                              </p>
+                              <p>{item.size}</p>
+                              <p>{item.pack}</p>
+                              <p>{item.classDesc}</p>
+                              <p>{item.subClassDescription}</p>
+                            </div>
+
+                            <div className="space-y-2">
+                              <button
+                                className="block text-gray-500 hover:text-karns-blue"
+                                type="button"
+                                onClick={async () => {
+                                  await addItem(item.itemCode, [
+                                    shelfIndex,
+                                    itemIndex + 1,
+                                  ]);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-5 h-5 "
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path d="M7 9a2 2 0 012-2h6a2 2 0 012 2v6a2 2 0 01-2 2H9a2 2 0 01-2-2V9z" />
+                                  <path d="M5 3a2 2 0 00-2 2v6a2 2 0 002 2V5h8a2 2 0 00-2-2H5z" />
+                                </svg>
+                              </button>
+
+                              <button
+                                className="block text-gray-500 hover:text-red-500"
+                                type="button"
+                                onClick={() => {
+                                  removeItem([shelfIndex, itemIndex]);
+                                }}
+                              >
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  className="w-5 h-5"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         ))}
                       </div>
