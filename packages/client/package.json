@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@aws-amplify/auth": "^3.4.32",
+    "@aws-cdk/aws-certificatemanager": "1.98.0",
+    "@aws-cdk/aws-route53": "1.98.0",
     "@aws-cdk/core": "1.98.0",
     "@kcm/shared": "^0.1.0",
     "@serverless-stack/cli": "^0.18.0",

@@ -18,7 +18,8 @@ type Action =
       payload: { item: Item; location: [number, number] };
     }
   | { type: "ADD_SHELF"; payload: number }
-  | { type: "REMOVE_ITEM"; payload: [number, number] };
+  | { type: "REMOVE_ITEM"; payload: [number, number] }
+  | { type: "RESET_ITEMS" };
 
 const initialState: State = {
   error: "",
@@ -85,6 +86,8 @@ const reducer = (state: State, action: Action): State => {
           ],
         },
       };
+    case "RESET_ITEMS":
+      return { ...state, set: { ...state.set, items: [[]] } };
     default:
       return { ...state };
   }
@@ -101,6 +104,7 @@ type Actions = {
   downloadAsCsv: (key: keyof Item) => void;
   downloadMissingItems: (props?: DownloadMissingItemsProps) => void;
   removeItem: (location: [number, number]) => void;
+  resetItems: () => void;
 };
 
 function transformUpc(upc: string): string {
@@ -190,7 +194,15 @@ function useSet(set?: Set): [State, Actions] {
 
   const downloadMissingItems = React.useCallback(
     (props?: DownloadMissingItemsProps) => {
+      const classDescsInSet = [
+        ...new global.Set(state.set.items.flat().map((i) => i.classDesc)),
+      ];
+
       let items = Object.keys(cache.current).reduce<Item[]>((prev, curr) => {
+        if (!classDescsInSet.includes(cache.current[curr].classDesc)) {
+          return [...prev];
+        }
+
         if (prev.some((i) => i.itemCode === cache.current[curr].itemCode)) {
           return [...prev];
         }
@@ -205,6 +217,7 @@ function useSet(set?: Set): [State, Actions] {
 
         return [...prev, cache.current[curr]];
       }, []);
+
       let fileName = `${state.set.store}-${state.set.name}-${Date.now()}`;
 
       if (props?.classDesc) {
@@ -228,12 +241,17 @@ function useSet(set?: Set): [State, Actions] {
     dispatch({ type: "REMOVE_ITEM", payload: location });
   }, []);
 
+  const resetItems = React.useCallback(() => {
+    dispatch({ type: "RESET_ITEMS" });
+  }, []);
+
   const actions: Actions = {
     addItem,
     addShelf,
     downloadMissingItems,
     downloadAsCsv,
     removeItem,
+    resetItems,
   };
 
   return [state, actions];

@@ -21,7 +21,14 @@ const Chart: React.FC = () => {
   const [{ book }] = useBook();
   const [
     setState,
-    { addItem, addShelf, downloadAsCsv, downloadMissingItems, removeItem },
+    {
+      addItem,
+      addShelf,
+      downloadAsCsv,
+      downloadMissingItems,
+      removeItem,
+      resetItems,
+    },
   ] = useSet();
 
   const handleAddFileClick = () => {
@@ -72,6 +79,14 @@ const Chart: React.FC = () => {
     }
   };
 
+  const classDescs = [
+    ...new Set(setState.set.items.flat().map((i) => i.classDesc)),
+  ];
+
+  const subClassDescriptions = [
+    ...new Set(setState.set.items.flat().map((i) => i.subClassDescription)),
+  ];
+
   return (
     <AuthGuard>
       <div className="flex flex-col min-h-screen">
@@ -84,46 +99,64 @@ const Chart: React.FC = () => {
                 <h2 className="font-medium">Add Items</h2>
 
                 <form
-                  className="flex items-center space-x-4"
+                  className="flex items-center justify-between"
                   onSubmit={handleAddItemSubmit}
                 >
-                  <div>
-                    <label
-                      className="block text-sm font-medium text-gray-500"
-                      htmlFor="identifier"
-                    >
-                      Identifier
-                      <input
-                        className="block text-gray-900 border-0 border-b outline-none w-28 ring-0 focus:ring-0 focus:outline-none"
-                        id="identifier"
-                        maxLength={12}
-                        name="identifier"
-                        ref={identifierInputRef}
-                        required
-                        value={identifier}
-                        onChange={(event) => setIdentifier(event.target.value)}
-                      />
-                    </label>
-                    <span className="text-xs text-gray-500">SVIC or UPC</span>
+                  <div className="flex items-center space-x-4">
+                    <div>
+                      <label
+                        className="block text-sm font-medium text-gray-500"
+                        htmlFor="identifier"
+                      >
+                        Identifier
+                        <input
+                          className="block text-gray-900 border-0 border-b outline-none w-28 ring-0 focus:ring-0 focus:outline-none"
+                          id="identifier"
+                          maxLength={12}
+                          name="identifier"
+                          ref={identifierInputRef}
+                          required
+                          value={identifier}
+                          onChange={(event) =>
+                            setIdentifier(event.target.value)
+                          }
+                        />
+                      </label>
+                      <span className="text-xs text-gray-500">SVIC or UPC</span>
+                    </div>
+
+                    <div className="">
+                      <button
+                        className="text-sm text-gray-500 hover:text-karns-blue"
+                        disabled={setState.status === "loading"}
+                        type="submit"
+                      >
+                        Add
+                      </button>
+                    </div>
+
+                    <div>
+                      <button
+                        className="text-sm text-gray-500 hover:text-karns-blue"
+                        type="button"
+                        onClick={handleAddShelfClick}
+                      >
+                        Add Shelf
+                      </button>
+                    </div>
                   </div>
 
-                  <div className="">
-                    <button
-                      className="text-sm text-karns-blue"
-                      disabled={setState.status === "loading"}
-                      type="submit"
-                    >
-                      Add
-                    </button>
-                  </div>
-
                   <div>
                     <button
-                      className="text-sm text-karns-blue"
+                      className="text-sm text-gray-500 hover:text-karns-blue"
                       type="button"
-                      onClick={handleAddShelfClick}
+                      onClick={() => {
+                        resetItems();
+                        setCurrentShelf(0);
+                        identifierInputRef.current?.focus();
+                      }}
                     >
-                      Add Shelf
+                      Reset Items
                     </button>
                   </div>
                 </form>
@@ -251,16 +284,14 @@ const Chart: React.FC = () => {
                     <h3 className="text-sm ">Missing items by class desc</h3>
 
                     <div className="border rounded-md">
-                      {[
-                        ...new Set(
-                          setState.set.items.flat().map((i) => i.classDesc)
-                        ),
-                      ].map((classDesc: string, index) => (
+                      {classDescs.map((classDesc: string, index) => (
                         <div
                           className={classNames(
                             "flex justify-between px-3 py-2",
                             {
-                              "border-b": index > 0,
+                              "border-b":
+                                classDescs.length > 1 &&
+                                index < classDescs.length - 1,
                             }
                           )}
                           key={classDesc}
@@ -290,38 +321,36 @@ const Chart: React.FC = () => {
                     </h3>
 
                     <div className="border rounded-md">
-                      {[
-                        ...new Set(
-                          setState.set.items
-                            .flat()
-                            .map((i) => i.subClassDescription)
-                        ),
-                      ].map((subClassDescription: string, index) => (
-                        <div
-                          className={classNames(
-                            "flex justify-between px-3 py-2",
-                            {
-                              "border-b": index > 0,
-                            }
-                          )}
-                          key={subClassDescription}
-                        >
-                          <span className="text-sm text-gray-500">
-                            {subClassDescription.toLowerCase()}
-                          </span>
-                          <div>
-                            <button
-                              className="text-sm text-gray-500 hover:text-karns-blue"
-                              type="button"
-                              onClick={() => {
-                                downloadMissingItems({ subClassDescription });
-                              }}
-                            >
-                              Download
-                            </button>
+                      {subClassDescriptions.map(
+                        (subClassDescription: string, index) => (
+                          <div
+                            className={classNames(
+                              "flex justify-between px-3 py-2",
+                              {
+                                "border-b":
+                                  subClassDescriptions.length > 1 &&
+                                  index < subClassDescriptions.length - 1,
+                              }
+                            )}
+                            key={subClassDescription}
+                          >
+                            <span className="text-sm text-gray-500">
+                              {subClassDescription.toLowerCase()}
+                            </span>
+                            <div>
+                              <button
+                                className="text-sm text-gray-500 hover:text-karns-blue"
+                                type="button"
+                                onClick={() => {
+                                  downloadMissingItems({ subClassDescription });
+                                }}
+                              >
+                                Download
+                              </button>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        )
+                      )}
                     </div>
                   </div>
                 </div>
