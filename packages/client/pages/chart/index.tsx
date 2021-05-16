@@ -224,135 +224,139 @@ const Chart: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-6 py-4 border rounded-md shadow-sm">
-              <div className="space-y-4">
-                <h2 className="font-medium">Missing Items</h2>
+            {setState.set.items.flat().length > 0 && (
+              <div className="px-6 py-4 border rounded-md shadow-sm">
+                <div className="space-y-4">
+                  <h2 className="font-medium">Missing Items</h2>
 
-                <div className="flex justify-between px-3 py-2 border rounded-md">
-                  <span className="text-sm text-gray-500">
-                    All missing items
-                  </span>
+                  <div className="flex justify-between px-3 py-2 border rounded-md">
+                    <span className="text-sm text-gray-500">
+                      All missing items
+                    </span>
 
-                  <div>
+                    <div>
+                      <button
+                        className="text-sm text-gray-500 hover:text-karns-blue"
+                        type="button"
+                        onClick={() => {
+                          downloadMissingItems();
+                        }}
+                      >
+                        Download
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h3 className="text-sm ">Missing items by class desc</h3>
+
+                    <div className="border rounded-md">
+                      {[
+                        ...new Set(
+                          setState.set.items.flat().map((i) => i.classDesc)
+                        ),
+                      ].map((classDesc: string, index) => (
+                        <div
+                          className={classNames(
+                            "flex justify-between px-3 py-2",
+                            {
+                              "border-b": index > 0,
+                            }
+                          )}
+                          key={classDesc}
+                        >
+                          <span className="text-sm text-gray-500">
+                            {classDesc.toLowerCase()}
+                          </span>
+                          <div>
+                            <button
+                              className="text-sm text-gray-500 hover:text-karns-blue"
+                              type="button"
+                              onClick={() => {
+                                downloadMissingItems({ classDesc });
+                              }}
+                            >
+                              Download
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-1">
+                    <h3 className="text-sm ">
+                      Missing items by subclass description
+                    </h3>
+
+                    <div className="border rounded-md">
+                      {[
+                        ...new Set(
+                          setState.set.items
+                            .flat()
+                            .map((i) => i.subClassDescription)
+                        ),
+                      ].map((subClassDescription: string, index) => (
+                        <div
+                          className={classNames(
+                            "flex justify-between px-3 py-2",
+                            {
+                              "border-b": index > 0,
+                            }
+                          )}
+                          key={subClassDescription}
+                        >
+                          <span className="text-sm text-gray-500">
+                            {subClassDescription.toLowerCase()}
+                          </span>
+                          <div>
+                            <button
+                              className="text-sm text-gray-500 hover:text-karns-blue"
+                              type="button"
+                              onClick={() => {
+                                downloadMissingItems({ subClassDescription });
+                              }}
+                            >
+                              Download
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {setState.set.items.flat().length > 0 && (
+              <div className="px-6 py-4 border rounded-md shadow-sm">
+                <div className="space-y-4">
+                  <h2 className="font-medium">Actions</h2>
+
+                  <div className="flex items-center space-x-4">
                     <button
-                      className="text-sm text-gray-500 hover:text-karns-blue"
+                      className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
                       type="button"
                       onClick={() => {
-                        downloadMissingItems();
+                        downloadAsCsv("itemCode");
                       }}
                     >
-                      Download
+                      Download as CSV (SVIC)
+                    </button>
+
+                    <button
+                      className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
+                      type="button"
+                      onClick={() => {
+                        downloadAsCsv("upc");
+                      }}
+                    >
+                      Download as CSV (UPC)
                     </button>
                   </div>
                 </div>
-
-                <div className="space-y-1">
-                  <h3 className="text-sm ">Missing items by class desc</h3>
-
-                  <div className="border rounded-md">
-                    {[
-                      ...new Set(
-                        setState.set.items.flat().map((i) => i.classDesc)
-                      ),
-                    ].map((classDesc: string, index) => (
-                      <div
-                        className={classNames(
-                          "flex justify-between px-3 py-2",
-                          {
-                            "border-b": index > 0,
-                          }
-                        )}
-                        key={classDesc}
-                      >
-                        <span className="text-sm text-gray-500">
-                          {classDesc.toLowerCase()}
-                        </span>
-                        <div>
-                          <button
-                            className="text-sm text-gray-500 hover:text-karns-blue"
-                            type="button"
-                            onClick={() => {
-                              downloadMissingItems({ classDesc });
-                            }}
-                          >
-                            Download
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-1">
-                  <h3 className="text-sm ">
-                    Missing items by subclass description
-                  </h3>
-
-                  <div className="border rounded-md">
-                    {[
-                      ...new Set(
-                        setState.set.items
-                          .flat()
-                          .map((i) => i.subClassDescription)
-                      ),
-                    ].map((subClassDescription: string, index) => (
-                      <div
-                        className={classNames(
-                          "flex justify-between px-3 py-2",
-                          {
-                            "border-b": index > 0,
-                          }
-                        )}
-                        key={subClassDescription}
-                      >
-                        <span className="text-sm text-gray-500">
-                          {subClassDescription.toLowerCase()}
-                        </span>
-                        <div>
-                          <button
-                            className="text-sm text-gray-500 hover:text-karns-blue"
-                            type="button"
-                            onClick={() => {
-                              downloadMissingItems({ subClassDescription });
-                            }}
-                          >
-                            Download
-                          </button>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
               </div>
-            </div>
-
-            <div className="px-6 py-4 border rounded-md shadow-sm">
-              <div className="space-y-4">
-                <h2 className="font-medium">Actions</h2>
-
-                <div className="flex items-center space-x-4">
-                  <button
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
-                    type="button"
-                    onClick={() => {
-                      downloadAsCsv("itemCode");
-                    }}
-                  >
-                    Download as CSV (SVIC)
-                  </button>
-
-                  <button
-                    className="px-3 py-2 text-sm border border-gray-300 rounded-md text-karns-blue hover:border-karns-blue"
-                    type="button"
-                    onClick={() => {
-                      downloadAsCsv("upc");
-                    }}
-                  >
-                    Download as CSV (UPC)
-                  </button>
-                </div>
-              </div>
-            </div>
+            )}
           </div>
 
           <div className="col-span-3 space-y-4">
