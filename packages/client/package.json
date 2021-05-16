@@ -4,7 +4,7 @@
   "license": "MIT",
   "scripts": {
     "dev": "next dev",
-    "deploy": "sst deploy",
+    "deploy:prod": "sst deploy --stage prod",
     "build": "next build",
     "start": "next start"
   },
