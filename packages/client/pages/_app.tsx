@@ -18,7 +18,9 @@ Auth.configure({
 });
 
 axios.defaults.baseURL =
-  "https://u6iw2dlwk9.execute-api.us-east-1.amazonaws.com";
+  process.env.NODE_ENV === "production"
+    ? "https://jet2drk595.execute-api.us-east-1.amazonaws.com"
+    : "https://u6iw2dlwk9.execute-api.us-east-1.amazonaws.com";
 
 axios.interceptors.request.use(async (config) => {
   const bearerToken = `Bearer ${(await Auth.currentSession())
